@@ -7,7 +7,7 @@ import FunkoManagment from "./funkoManagment.js";
  * CLI command handler using Yargs to manage Funkos.
  * Provides functionality to add, modify, delete, list, and read Funko collections.
  */
-export default yargs(hideBin(process.argv))
+const argv = yargs(hideBin(process.argv))
 
   /**
    * Command to add a new Funko to a user's collection.
@@ -20,8 +20,8 @@ export default yargs(hideBin(process.argv))
       id: { description: 'Funko ID', type: 'number', demandOption: true },
       name: { description: 'Funko name', type: 'string', demandOption: true },
       description: { description: 'Funko description', type: 'string', demandOption: true },
-      type: { description: 'Funko type', type: 'string', demandOption: true },
-      gender: { description: 'Funko gender', type: 'string', demandOption: true },
+      type: { description: 'Funko type', type: 'string', choices: Object.values(FunkoType), demandOption: true },
+      gender: { description: 'Funko gender', type: 'string', choices: Object.values(FunkoGender), demandOption: true },
       franchise: { description: 'Funko franchise', type: 'string', demandOption: true },
       number: { description: 'Funko franchise number', type: 'number', demandOption: true },
       exclusive: { description: 'Funko exclusive', type: 'boolean', demandOption: true },
@@ -29,6 +29,10 @@ export default yargs(hideBin(process.argv))
       price: { description: 'Funko price', type: 'number', demandOption: true }
     },
     (argv) => {
+      if (argv.price < 0) {
+        throw new Error('Price must be a positive number');
+      }
+
       const funko: Funko = {
         id: argv.id,
         name: argv.name,
@@ -41,6 +45,7 @@ export default yargs(hideBin(process.argv))
         specialCharacteristics: argv.specialCharacteristics,
         price: argv.price
       };
+
       FunkoManagment.getInstance().createFunko(argv.user, funko);
     }
   )
@@ -56,8 +61,8 @@ export default yargs(hideBin(process.argv))
       id: { description: 'Funko ID', type: 'number', demandOption: true },
       name: { description: 'Funko name', type: 'string', demandOption: true },
       description: { description: 'Funko description', type: 'string', demandOption: true },
-      type: { description: 'Funko type', type: 'string', demandOption: true },
-      gender: { description: 'Funko gender', type: 'string', demandOption: true },
+      type: { description: 'Funko type', type: 'string', choices: Object.values(FunkoType), demandOption: true },
+      gender: { description: 'Funko gender', type: 'string', choices: Object.values(FunkoGender), demandOption: true },
       franchise: { description: 'Funko franchise', type: 'string', demandOption: true },
       number: { description: 'Funko franchise number', type: 'number', demandOption: true },
       exclusive: { description: 'Funko exclusive', type: 'boolean', demandOption: true },
@@ -65,6 +70,10 @@ export default yargs(hideBin(process.argv))
       price: { description: 'Funko price', type: 'number', demandOption: true }
     },
     (argv) => {
+      if (argv.price < 0) {
+        throw new Error('Price must be a positive number');
+      }
+      
       const funko: Funko = {
         id: argv.id,
         name: argv.name,
@@ -77,6 +86,7 @@ export default yargs(hideBin(process.argv))
         specialCharacteristics: argv.specialCharacteristics,
         price: argv.price
       };
+
       FunkoManagment.getInstance().updateFunko(argv.user, funko);
     }
   )
