@@ -14,7 +14,7 @@ enum FunkoRangePrice {
  * Handles the printing of Funko details in a formatted and colored manner.
  */
 export default class FunkoPrint {
-  private static _log = console.log;
+  private static readonly _log = console.log;
 
   /**
    * Prints the details of a given Funko with appropriate formatting and colors.
