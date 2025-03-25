@@ -1,12 +1,12 @@
 {
-  "id": 4,
-  "name": "Funko 4",
-  "description": "Mi cuarto Funko",
+  "id": 5,
+  "name": "Funko 5",
+  "description": "Mi x Funko",
   "type": "Vynil Gold",
   "gender": "Music",
   "franchise": "Franquicia 1",
   "number": 4,
   "exclusive": true,
   "specialCharacteristics": "",
-  "price": 40
+  "price": 30
 }
