@@ -1,0 +1,12 @@
+{
+  "id": 1,
+  "name": "funko 7",
+  "description": "mi primer funko",
+  "type": "Pop!",
+  "gender": "Sport",
+  "franchise": "f1",
+  "number": 1,
+  "exclusive": true,
+  "specialCharacteristics": "",
+  "price": 9
+}

@@ -1,3 +1,5 @@
+// node dist/app.js add --user "ipg" --id 1 --name "funko 1" --description "mi primer funko" --type "Pop!" --gender "Sport" --franchise "f1" --number 1 --exclusive true --specialCharacteristics "" --price 9
+
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import Funko, { FunkoGender, FunkoType } from "./funko.js";

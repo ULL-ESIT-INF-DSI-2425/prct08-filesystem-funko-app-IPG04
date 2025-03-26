@@ -24,32 +24,33 @@ export default class FunkoManagment {
   }
 
   /**
-   * Checks if a Funko exists in a user's collection.
-   * @param user - The user's name.
-   * @param id - The Funko's ID.
-   * @returns `true` if the Funko exists, `false` otherwise.
-   */
-  private funkoExists(user: string, id: number): boolean {
-    return fs.existsSync(`./funkos/${user}/${id}.json`);
-  }
-
-  /**
    * Creates a new Funko in the user's collection.
    * If the Funko already exists, an error message is displayed.
    * @param user - The user's name.
    * @param funko - The Funko object to add.
    */
   public createFunko(user: string, funko: Funko) {
-    if (this.funkoExists(user, funko.id)) {
-      console.log(chalk.red('Funko already exists'));
-    } else {
-      if (!fs.existsSync(`./funkos/${user}`)) {
-        fs.mkdirSync(`./funkos/${user}`);
+    let funkoExists = false;
+    fs.access(`./funkos/${user}/${funko.id}.json`, (error) => {
+      if (!error) {
+        funkoExists = true;
       }
-      fs.writeFileSync(`./funkos/${user}/${funko.id}.json`, JSON.stringify(funko, null, 2));
-      console.log(chalk.green(`New Funko created in ${user} collection!`));
+    });
+    setTimeout(() => { 
+      if (funkoExists) {
+        console.log(chalk.red('Funko already exists'));
+      } else {
+        fs.access(`./funkos/${user}`, (error) => {
+          if (error) {
+            fs.mkdir(`./funkos/${user}`, () => {});
+          }
+          fs.writeFile(`./funkos/${user}/${funko.id}.json`, JSON.stringify(funko, null, 2), () => {
+            console.log(chalk.green(`New Funko created in ${user} collection!`));
+            });
+          });
+        }
+      }, 100);
     }
-  }
 
   /**
    * Updates an existing Funko in the user's collection.
@@ -58,12 +59,21 @@ export default class FunkoManagment {
    * @param funko - The updated Funko object.
    */
   public updateFunko(user: string, funko: Funko) {
-    if (this.funkoExists(user, funko.id)) {
-      fs.writeFileSync(`./funkos/${user}/${funko.id}.json`, JSON.stringify(funko, null, 2));
-      console.log(chalk.green(`Funko updated in ${user} collection!`));
-    } else {
-      console.log(chalk.red(`Funko not found in ${user} collection!`));
-    }
+    let funkoExists = false;
+    fs.access(`./funkos/${user}/${funko.id}.json`, (error) => {
+      if (!error) {
+        funkoExists = true;
+      }
+    });
+    setTimeout(() => {
+      if (funkoExists) {
+        fs.writeFile(`./funkos/${user}/${funko.id}.json`, JSON.stringify(funko, null, 2), () => {
+          console.log(chalk.green(`Funko updated in ${user} collection!`));
+        });
+      } else {
+        console.log(chalk.red(`Funko not found in ${user} collection!`));
+      }
+    }, 100);
   }
 
   /**
@@ -73,12 +83,21 @@ export default class FunkoManagment {
    * @param id - The ID of the Funko to delete.
    */
   public deleteFunko(user: string, id: number) {
-    if (this.funkoExists(user, id)) {
-      fs.unlinkSync(`./funkos/${user}/${id}.json`);
-      console.log(chalk.green(`Funko deleted from ${user} collection!`));
-    } else {
-      console.log(chalk.red(`Funko not found in ${user} collection!`));
-    }
+    let funkoExists = false;
+    fs.access(`./funkos/${user}/${id}.json`, (error) => {
+      if (!error) {
+        funkoExists = true;
+      }
+    });
+    setTimeout(() => {
+      if (funkoExists) {
+        fs.unlink(`./funkos/${user}/${id}.json`, () => {
+          console.log(chalk.green(`Funko deleted from ${user} collection!`));
+        });
+      } else {
+        console.log(chalk.red(`Funko not found in ${user} collection!`));
+      }
+    }, 100);
   }
 
   /**
@@ -88,12 +107,23 @@ export default class FunkoManagment {
    * @param id - The ID of the Funko to read.
    */
   public readFunko(user: string, id: number) {
-    if (this.funkoExists(user, id)) {
-      const data = fs.readFileSync(`./funkos/${user}/${id}.json`, 'utf-8')
-      FunkoPrint.printFunko(JSON.parse(data));
-    } else {
-      console.log(chalk.red(`Funko not found in ${user} collection!`));
-    }
+    let funkoExists = false;
+    fs.access(`./funkos/${user}/${id}.json`, (error) => {
+      if (!error) {
+        funkoExists = true;
+      }
+    });
+    setTimeout(() => {
+      if (funkoExists) {
+        fs.readFile(`./funkos/${user}/${id}.json`, 'utf-8', (err, data) => {
+          if (!err) {
+            FunkoPrint.printFunko(JSON.parse(data));
+          }
+        });
+      } else {
+        console.log(chalk.red(`Funko not found in ${user} collection!`));
+      }
+    }, 100);
   }
 
   /**
@@ -102,16 +132,20 @@ export default class FunkoManagment {
    * @param user - The user's name.
    */
   public listFunkos(user: string) {
-    if (!fs.existsSync(`./funkos/${user}`)) {
-      console.log(chalk.red('User not found'));
-      return;
-    }
-    const files = fs.readdirSync(`./funkos/${user}/`)
-    console.log(chalk.green(`${user} collection:`));
-    files.forEach((file) => {
-      const data = fs.readFileSync(`./funkos/${user}/${file}`, 'utf-8');
-      console.log('-------------------');
-      FunkoPrint.printFunko(JSON.parse(data));
+    fs.readdir(`./funkos/${user}/`, (err, files) => {
+      if (err) {
+        console.log(chalk.red(`No Funkos found on ${user} collection!`));
+      } else {
+        console.log(chalk.green(`${user} collection:`));
+        files.forEach((file) => {
+          fs.readFile(`./funkos/${user}/${file}`, 'utf-8', (err, data) => {
+            if (!err) {
+              console.log('-------------------');
+              FunkoPrint.printFunko(JSON.parse(data));
+            }
+          });
+        });
+      }
     });
   }
 }
